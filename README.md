@@ -1,3 +1,60 @@
+# （AB社内向け）Mozilla Hubsフロントエンドの改造部分
+
+## 実装した内容
+* クリックしたオブジェクトに応じて処理を追加
+
+## 改造箇所
+
+### 1. クリックイベントの追加
+
+対象箇所： [/src/systems/triggeredFunctions.js](./src/systems/triggeredFunctions.js)
+
+```javascript
+static googleSpawnerClick() {
+    // check if product modal is opend by searching one of the element of the modal
+    var el = document.getElementById("product_dialog_product_name");
+    if(!el)
+    {
+        // write product info on session
+        localStorage.setItem('product-script-src','https://www.google.com/');
+        
+        document.querySelectorAll('[class*=product-button]')[0].click();
+    }
+}
+```
+
+### 2. クリック後の処理の追加
+
+対象箇所： [/src/systems/super-spawner-system.js](./src/systems/super-spawner-system.js)
+
+```javascript
+...
+if (
+    superSpawner &&
+    superSpawner.spawnedMediaScale &&
+    !superSpawner.cooldownTimeout &&
+    userinput.get(grabPath) &&
+    isPermitted
+) {
+    this.performSpawn(state, grabPath, userinput, superSpawner);
+} else if(
+    superSpawner &&
+    superSpawner.spawnedMediaScale &&
+    !superSpawner.cooldownTimeout &&
+    userinput.get(grabPath) &&
+    isPermitted &&
+    isScriptTrigger
+){
+    // trigger function
+    if(state.hovered.object3D.name.indexOf('google') !== -1)
+    {
+    triggeredFunctions.googleSpawnerClick();
+    }
+}
+...
+```
+
+------
 # [Mozilla Hubs](https://hubs.mozilla.com/)
 
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0) [![Build Status](https://travis-ci.org/mozilla/hubs.svg?branch=master)](https://travis-ci.org/mozilla/hubs) [![Discord](https://img.shields.io/discord/498741086295031808)](https://discord.gg/CzAbuGu)
